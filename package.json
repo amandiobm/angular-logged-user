@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/amandio_magalhaes/angular-logged-user.git"
+    "url": "https://github.com/amandiobm/angular-logged-user.git"
   },
   "keywords": [
     "angular",
@@ -20,7 +20,7 @@
   "author": "Amandio Magalhaes",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/amandio_magalhaes/angular-logged-user/issues"
+    "url": "https://github.com/amandiobm/angular-logged-user/issues"
   },
   "devDependencies": {
     "bower": "^1.8.0",
