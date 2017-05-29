@@ -30,10 +30,10 @@ Any sensitive data or actions should integrate a server check like this example.
 
 ### Set Data
 
-Setup the `AclService` in your app module's `run()` block.
+Setup the `LoggedUserService` in your app module's `run()` block.
 
 ```js
-app.run(['AclService', function (AclService) {
+app.run(['LoggedUserService', function (LoggedUserService) {
   
   // Set the ACL data. Normally, you'd fetch this from an API or something.
   // The data should have the roles as the property names,
@@ -43,10 +43,10 @@ app.run(['AclService', function (AclService) {
     member: ['logout', 'view_content'],
     admin: ['logout', 'view_content', 'manage_content']
   }
-  AclService.setAbilities(aclData);
+  LoggedUserService.setAbilities(aclData);
 
   // Attach the member role to the current user
-  AclService.attachRole('member');
+  LoggedUserService.attachRole('member');
 
 }]);
 ```
@@ -62,8 +62,8 @@ app.config(['$routeProvider', function ($routeProvider) {
   $routeProvider
     .when('/manage', {
       resolve : {
-        'acl' : ['$q', 'AclService', function($q, AclService){
-          if(AclService.can('manage_content')){
+        'acl' : ['$q', 'LoggedUserService', function($q, LoggedUserService){
+          if(LoggedUserService.can('manage_content')){
             // Has proper permissions
             return true;
           } else {
@@ -75,8 +75,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     });
     .when('/content', {
       resolve : {
-        'acl' : ['$q', 'AclService', function($q, AclService){
-          if(AclService.can('view_content')){
+        'acl' : ['$q', 'LoggedUserService', function($q, LoggedUserService){
+          if(LoggedUserService.can('view_content')){
             // Has proper permissions
             return true;
           } else {
@@ -105,8 +105,8 @@ The edit link in the template below will not show, because the current user is a
 ###### Controller
 
 ```js
-app.controller('DemoCtrl', ['$scope', 'AclService', function ($scope, AclService) {
-  $scope.can = AclService.can;
+app.controller('DemoCtrl', ['$scope', 'LoggedUserService', function ($scope, LoggedUserService) {
+  $scope.can = LoggedUserService.can;
   $scope.id = 22;
   $scope.title = 'My Demo Title';
 }]);
@@ -135,10 +135,10 @@ Add a `<script>` to your `index.html`:
 <script src="/bower_components/angular-logged-user/angular-logged-user.js"></script>
 ```
 
-And add `mm.acl` as a dependency for your app:
+And add `svdesignti.loggedUser` as a dependency for your app:
 
 ```javascript
-angular.module('myApp', ['mm.acl']);
+angular.module('myApp', ['svdesignti.loggedUser']);
 ```
 
 ---
@@ -147,15 +147,15 @@ angular.module('myApp', ['mm.acl']);
 
 ### Config
 
-You can modify the configuration by extending the config object during the Angular configuration phase using the `config()` method on the `AclServiceProvider`.
+You can modify the configuration by extending the config object during the Angular configuration phase using the `config()` method on the `LoggedUserServiceProvider`.
 
 ```js
-app.config(['AclServiceProvider', function (AclServiceProvider) {
+app.config(['LoggedUserServiceProvider', function (LoggedUserServiceProvider) {
   var myConfig = {
     storage: 'localStorage',
     storageKey: 'AppAcl'
   };
-  AclServiceProvider.config(myConfig);
+  LoggedUserServiceProvider.config(myConfig);
 }]);
 ```
 
@@ -164,11 +164,11 @@ app.config(['AclServiceProvider', function (AclServiceProvider) {
 | Property | Default | Description |
 | -------- | ------- | ----------- |
 | `storage` | `"sessionStorage"` | `"sessionStorage"`, `"localStorage"`, `false`. Where you want to persist your ACL data. If you would prefer not to use web storage, then you can pass a value of `false`, and data will be reset on next page refresh _(next time the Angular app has to bootstrap)_ |
-| `storageKey` | `"AclService"` | The key that will be used when storing data in web storage |
+| `storageKey` | `"LoggedUserService"` | The key that will be used when storing data in web storage |
 
 ### Public Methods
 
-#### `AclService.resume()`
+#### `LoggedUserService.resume()`
 
 Restore data from web storage.
 
@@ -179,18 +179,18 @@ Restore data from web storage.
 ###### Example Usage
 
 ```js
-app.run(['AclService', function (AclService) {
+app.run(['LoggedUserService', function (LoggedUserService) {
   // Attempt to load from web storage
-  if (!AclService.resume()) {
+  if (!LoggedUserService.resume()) {
     // Web storage record did not exist, we'll have to build it from scratch
     
-    // Get the user role, and add it to AclService
+    // Get the user role, and add it to LoggedUserService
     var userRole = fetchUserRoleFromSomewhere();
-    AclService.addRole(userRole);
+    LoggedUserService.addRole(userRole);
     
-    // Get ACL data, and add it to AclService
+    // Get ACL data, and add it to LoggedUserService
     var aclData = fetchAclFromSomewhere();
-    AclService.setAbilities(aclData);
+    LoggedUserService.setAbilities(aclData);
   }
 }]);
 ```
@@ -198,16 +198,16 @@ app.run(['AclService', function (AclService) {
 You can also run `resume()` in the `config` phase, if you need the app to load the ACL data from web storage earlier in the app bootstrap process (e.g. before `$routeProvider` resolves the first route).
 
 ```js
-app.config(['AclServiceProvider', function (AclServiceProvider) {
-  AclServiceProvider.resume();
+app.config(['LoggedUserServiceProvider', function (LoggedUserServiceProvider) {
+  LoggedUserServiceProvider.resume();
 }]);
 ```
 
-#### `AclService.flushStorage()`
+#### `LoggedUserService.flushStorage()`
 
 Remove all data from web storage.
 
-#### `AclService.attachRole(role)`
+#### `LoggedUserService.attachRole(role)`
 
 Attach a role to the current user. A user can have multiple roles.
 
@@ -217,7 +217,7 @@ Attach a role to the current user. A user can have multiple roles.
 | ----- | ---- | ------- | ------- |
 | `role` | string | `"admin"` | The role label |
 
-#### `AclService.detachRole(role)`
+#### `LoggedUserService.detachRole(role)`
 
 Remove a role from the current user
 
@@ -227,11 +227,11 @@ Remove a role from the current user
 | ----- | ---- | ------- | ------- |
 | `role` | string | `"admin"` | The role label |
 
-#### `AclService.flushRoles()`
+#### `LoggedUserService.flushRoles()`
 
 Remove all roles from current user
 
-#### `AclService.getRoles()`
+#### `LoggedUserService.getRoles()`
 
 Get all of the roles attached to the user
 
@@ -239,7 +239,7 @@ Get all of the roles attached to the user
 
 **array**
 
-#### `AclService.hasRole(role)`
+#### `LoggedUserService.hasRole(role)`
 
 Check if the current user has role(s) attached. If an array is given, all roles must be attached. To check if any roles in an array are attached see the `hasAnyRole()` method.
 
@@ -253,7 +253,7 @@ Check if the current user has role(s) attached. If an array is given, all roles 
 
 **boolean**
 
-#### `AclService.hasAnyRole(roles)`
+#### `LoggedUserService.hasAnyRole(roles)`
 
 Check if the current user has any of the given roles attached. To check if all roles in an array are attached see the `hasRole()` method.
 
@@ -267,7 +267,7 @@ Check if the current user has any of the given roles attached. To check if all r
 
 **boolean**
 
-#### `AclService.setAbilities(abilities)`
+#### `LoggedUserService.setAbilities(abilities)`
 
 Set the abilities object (overwriting previous abilities).
 
@@ -285,10 +285,10 @@ var abilities = {
   user: ['logout', 'view_content'],
   admin: ['logout', 'view_content', 'manage_content']
 }
-AclService.setAbilities(abilities);
+LoggedUserService.setAbilities(abilities);
 ```
 
-#### `AclService.addAbility(role, ability)`
+#### `LoggedUserService.addAbility(role, ability)`
 
 Add an ability to a role
 
@@ -299,7 +299,7 @@ Add an ability to a role
 | `role` | string | `"admin"` | The role label |
 | `ability` | string | `"create_users"` | The ability/permission label |
 
-#### `AclService.can(ability)`
+#### `LoggedUserService.can(ability)`
 
 Does current user have permission to do the given ability?
 
@@ -311,15 +311,15 @@ Does current user have permission to do the given ability?
 
 ```js
 // Setup some abilities
-AclService.addAbility('moderator', 'ban_users');
-AclService.addAbility('admin', 'create_users');
+LoggedUserService.addAbility('moderator', 'ban_users');
+LoggedUserService.addAbility('admin', 'create_users');
 
 // Add moderator role to the current user
-AclService.attachRole('moderator');
+LoggedUserService.attachRole('moderator');
 
 // Check if the current user has these permissions
-AclService.can('ban_users'); // returns true
-AclService.can('create_users'); // returns false
+LoggedUserService.can('ban_users'); // returns true
+LoggedUserService.can('create_users'); // returns false
 ```
 
 ### Directives
@@ -339,7 +339,7 @@ Only user's that have the `edit_posts` permission would see the button.
 This is essentially a shortcut instead of having to type out an `ngShow` like this...
 
 ```html
-<button ng-show="$ctrl.AclService.can('edit_posts')">Edit Post</button>
+<button ng-show="$ctrl.LoggedUserService.can('edit_posts')">Edit Post</button>
 ```
 
 ---

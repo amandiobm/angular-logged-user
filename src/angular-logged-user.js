@@ -2,9 +2,9 @@
 
 var NG_HIDE_CLASS = 'ng-hide';
 
-angular.module('mm.acl', []);
+angular.module('svdesignti.loggedUser', []);
 
-angular.module('mm.acl').provider('AclService', [
+angular.module('svdesignti.loggedUser').provider('LoggedUserService', [
   function () {
 
     /**
@@ -26,7 +26,7 @@ angular.module('mm.acl').provider('AclService', [
 
     var config = {
       storage: 'sessionStorage',
-      storageKey: 'AclService'
+      storageKey: 'LoggedUserService'
     };
 
     var data = {
@@ -107,20 +107,20 @@ angular.module('mm.acl').provider('AclService', [
       return (data) ? JSON.parse(data) : false;
     };
 
-    var AclService = {};
-    AclService.resume = resume;
+    var LoggedUserService = {};
+    LoggedUserService.resume = resume;
 
     /* start-test-block */
 
     // Add debug annotations for unit testing private functions/variables,
     // which will be stripped during the production build
-    AclService._config = config;
-    AclService._data = data;
-    AclService._roleHasAbilities = roleHasAbilities;
-    AclService._getRoleAbilities = getRoleAbilities;
-    AclService._save = save;
-    AclService._saveToStorage = saveToStorage;
-    AclService._fetchFromStorage = fetchFromStorage;
+    LoggedUserService._config = config;
+    LoggedUserService._data = data;
+    LoggedUserService._roleHasAbilities = roleHasAbilities;
+    LoggedUserService._getRoleAbilities = getRoleAbilities;
+    LoggedUserService._save = save;
+    LoggedUserService._saveToStorage = saveToStorage;
+    LoggedUserService._fetchFromStorage = fetchFromStorage;
 
     /* end-test-block */
 
@@ -155,7 +155,7 @@ angular.module('mm.acl').provider('AclService', [
     /**
      * Remove data from web storage
      */
-    AclService.flushStorage = function () {
+    LoggedUserService.flushStorage = function () {
       unset();
     };
 
@@ -164,7 +164,7 @@ angular.module('mm.acl').provider('AclService', [
      *
      * @param role
      */
-    AclService.attachRole = function (role) {
+    LoggedUserService.attachRole = function (role) {
       if (data.roles.indexOf(role) === -1) {
         data.roles.push(role);
         save();
@@ -176,7 +176,7 @@ angular.module('mm.acl').provider('AclService', [
      *
      * @param role
      */
-    AclService.detachRole = function (role) {
+    LoggedUserService.detachRole = function (role) {
       var i = data.roles.indexOf(role);
       if (i > -1) {
         data.roles.splice(i, 1);
@@ -187,7 +187,7 @@ angular.module('mm.acl').provider('AclService', [
     /**
      * Remove all roles from current user
      */
-    AclService.flushRoles = function () {
+    LoggedUserService.flushRoles = function () {
       data.roles = [];
       save();
     };
@@ -198,7 +198,7 @@ angular.module('mm.acl').provider('AclService', [
      * @param role
      * @returns {boolean}
      */
-    AclService.hasRole = function (role) {
+    LoggedUserService.hasRole = function (role) {
       var roles = angular.isArray(role) ? role : [role];
       for (var l = roles.length; l--;) {
         if (data.roles.indexOf(roles[l]) === -1) {
@@ -214,9 +214,9 @@ angular.module('mm.acl').provider('AclService', [
      * @param roles
      * @returns {boolean}
      */
-    AclService.hasAnyRole = function (roles) {
+    LoggedUserService.hasAnyRole = function (roles) {
       for (var l = roles.length; l--;) {
-        if (AclService.hasRole(roles[l])) {
+        if (LoggedUserService.hasRole(roles[l])) {
           return true;
         }
       }
@@ -227,7 +227,7 @@ angular.module('mm.acl').provider('AclService', [
      * Returns the current user roles
      * @returns {Array}
      */
-    AclService.getRoles = function () {
+    LoggedUserService.getRoles = function () {
       return data.roles;
     };
 
@@ -248,7 +248,7 @@ angular.module('mm.acl').provider('AclService', [
      *
      * @param abilities
      */
-    AclService.setAbilities = function (abilities) {
+    LoggedUserService.setAbilities = function (abilities) {
       data.abilities = abilities;
       save();
     };
@@ -259,7 +259,7 @@ angular.module('mm.acl').provider('AclService', [
      * @param role
      * @param ability
      */
-    AclService.addAbility = function (role, ability) {
+    LoggedUserService.addAbility = function (role, ability) {
       if (!data.abilities[role]) {
         data.abilities[role] = [];
       }
@@ -273,7 +273,7 @@ angular.module('mm.acl').provider('AclService', [
      * @param ability
      * @returns {boolean}
      */
-    AclService.can = function (ability) {
+    LoggedUserService.can = function (ability) {
       var role, abilities;
       // Loop through roles
       var l = data.roles.length;
@@ -296,7 +296,7 @@ angular.module('mm.acl').provider('AclService', [
      * @param abilities [array]
      * @returns {boolean}
      */
-    AclService.canAny = function (abilities) {
+    LoggedUserService.canAny = function (abilities) {
       var role, roleAbilities;
       // Loop through roles
       var l = data.roles.length;
@@ -324,19 +324,19 @@ angular.module('mm.acl').provider('AclService', [
       },
       resume: resume,
       $get: function () {
-        return AclService;
+        return LoggedUserService;
       }
     };
 
   }
-]).directive('aclShow', function (AclService) {
+]).directive('aclShow', function (LoggedUserService) {
   return {
     restrict: 'A',
     link: function (scope, element, attrs) {
       scope.$watch(attrs.aclShow, function aclShowWatchAction(value) {
         var permissions, can;
         permissions = value.split(',');
-        can = AclService.canAny(permissions);
+        can = LoggedUserService.canAny(permissions);
         if (!can) {
           element.addClass(NG_HIDE_CLASS);
         } else {
