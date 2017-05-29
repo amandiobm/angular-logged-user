@@ -1,0 +1,46 @@
+{
+  "name": "angular-logged-user",
+  "version": "0.1.0",
+  "description": "Logged User for AngularJS",
+  "main": "angular-logged-user.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amandio_magalhaes/angular-logged-user.git"
+  },
+  "keywords": [
+    "angular",
+    "responsive"
+  ],
+  "author": "Amandio Magalhaes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amandio_magalhaes/angular-logged-user/issues"
+  },
+  "devDependencies": {
+    "bower": "^1.8.0",
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-uglify": "^2.2.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-karma": "^2.0.0",
+    "grunt-karma-coveralls": "~2.5.1",
+    "grunt-notify": "^0.4.5",
+    "grunt-strip-code": "^1.0.4",
+    "jasmine-core": "^2.5.2",
+    "jshint-stylish": "^2.2.1",
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-junit-reporter": "^1.2.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "load-grunt-tasks": "^3.5.2",
+    "time-grunt": "^1.4.0"
+  }
+}

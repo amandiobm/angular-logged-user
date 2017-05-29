@@ -1,0 +1,27 @@
+{
+  "name": "angular-logged-user",
+  "version": "0.1.0",
+  "homepage": "https://github.com/amandio_magalhaes/angular-logged-user",
+  "authors": [
+    "Amandio Magalhaes<amandio.magalhaes@gmail.com>"
+  ],
+  "description": "Logged User for AngularJS",
+  "main": "angular-logged-user.js",
+  "keywords": [
+    "logged",
+    "user",
+    "angular"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular": "~1.4.0",
+    "angular-mocks": "~1.4.0"
+  }
+}
