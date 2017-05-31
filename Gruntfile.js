@@ -85,8 +85,7 @@ module.exports = function (grunt) {
 
     coveralls: {
       options: {
-        coverageDir: './coverage',
-        dryRun: true
+        coverageDir: './coverage'
       }
     },
 
