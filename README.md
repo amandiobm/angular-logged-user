@@ -1,28 +1,17 @@
-# Angular ACL
+# Angular Logged User
 
-[![Build Status](https://img.shields.io/travis/mikemclin/angular-acl/master.svg?style=flat-square)](https://travis-ci.org/mikemclin/angular-acl)
-[![Coverage Status](https://img.shields.io/coveralls/mikemclin/angular-acl/master.svg?style=flat-square)](https://coveralls.io/r/mikemclin/angular-acl?branch=master)
+[![Build Status](https://travis-ci.org/amandiobm/angular-local-storage.svg?branch=master)](https://travis-ci.org/amandiobm/angular-local-storage)
+[![Coverage Status](https://img.shields.io/coveralls/amandiobm/angular-local-storage/master.svg?style=flat-square)](https://coveralls.io/r/amandiobm/angular-local-storage?branch=master)
 
 ---
 
 ## About
 
-Angular ACL _(Access Control List)_ is a service that allows you to protect/show content based on the current user's assigned role(s), and those role(s) permissions (abilities).  So, if the current user has a "moderator" role, and a moderator can "ban_users", then the current user can "ban_users".
+Angular Logged User is a service that allows you to get your logged user information
 
 Common uses include:
 
-* Manipulate templates based on role/permissions
-* Prevent routes that should not be viewable to user
-
-### How secure is this?
-
-A great analogy to ACL's in JavaScript would be form validation in JavaScript.  Just like form validation, ACL's in the browser can be tampered with.  However, just like form validation, ACL's are really useful and provide a better experience for the user and the developer.  Just remember, **any sensitive data or actions should require a server (or similar) as the final authority**.
-
-##### Example Tampering Scenario
-
-The current user has a role of "guest".  A guest is not able to "create_users".  However, this sneaky guest is clever enough to tamper with the system and give themselves that privilege. So, now that guest is at the "Create Users" page, and submits the form. The form data is sent to the server and the user is greeted with an "Access Denied: Unauthorized" message, because the server also checked to make sure that the user had the correct permissions.
-
-Any sensitive data or actions should integrate a server check like this example.
+* Manipulate templates
 
 ---
 
@@ -38,63 +27,12 @@ app.run(['LoggedUserService', function (LoggedUserService) {
   // Set the ACL data. Normally, you'd fetch this from an API or something.
   // The data should have the roles as the property names,
   // with arrays listing their permissions as their value.
-  var aclData = {
-    guest: ['login'],
-    member: ['logout', 'view_content'],
-    admin: ['logout', 'view_content', 'manage_content']
+  var data = {
+    username: 'Foo',
+    displayName: 'Bar'
   }
-  LoggedUserService.setAbilities(aclData);
+  LoggedUserService.setUser(data);
 
-  // Attach the member role to the current user
-  LoggedUserService.attachRole('member');
-
-}]);
-```
-
-### Protect a route
-
-If the current user tries to go to the `/manage` route, they will be redirected because the current user is a `member`, and `manage_content` is not one of a member role's abilities.
-
-However, when the user goes to `/content`, route will work as normal, since the user has permission.  If the user was not a `member`, but a `guest`, then they would not be able to see the `content` route either, based on the data we set above.
-
-```js
-app.config(['$routeProvider', function ($routeProvider) {
-  $routeProvider
-    .when('/manage', {
-      resolve : {
-        'acl' : ['$q', 'LoggedUserService', function($q, LoggedUserService){
-          if(LoggedUserService.can('manage_content')){
-            // Has proper permissions
-            return true;
-          } else {
-            // Does not have permission
-            return $q.reject('Unauthorized');
-          }
-        }]
-      }
-    });
-    .when('/content', {
-      resolve : {
-        'acl' : ['$q', 'LoggedUserService', function($q, LoggedUserService){
-          if(LoggedUserService.can('view_content')){
-            // Has proper permissions
-            return true;
-          } else {
-            // Does not have permission
-            return $q.reject('Unauthorized');
-          }
-        }]
-      }
-    });
-}]);
-
-app.run(['$rootScope', '$location', function ($rootScope, $location) {
-  // If the route change failed due to our "Unauthorized" error, redirect them
-  $rootScope.$on('$routeChangeError', function(event, current, previous, rejection){
-    if(rejection === 'Unauthorized'){
-      $location.path('/');
-    }
-  })
 }]);
 ```
 
@@ -106,17 +44,14 @@ The edit link in the template below will not show, because the current user is a
 
 ```js
 app.controller('DemoCtrl', ['$scope', 'LoggedUserService', function ($scope, LoggedUserService) {
-  $scope.can = LoggedUserService.can;
-  $scope.id = 22;
-  $scope.title = 'My Demo Title';
+  $scope.loggedUser = LoggedUserService.get();
 }]);
 ```
 
 ###### Template
 
 ```html
-<h1>{{ title }}</h1>
-<a ng-href="edit/{{ id }}" ng-show="can('manage_content')">Edit</a>
+<h1>{{ loggedUser.username }}</h1>
 ```
 
 ---
@@ -135,7 +70,7 @@ Add a `<script>` to your `index.html`:
 <script src="/bower_components/angular-logged-user/angular-logged-user.js"></script>
 ```
 
-And add `svdesignti.loggedUser` as a dependency for your app:
+And add `mm.acl` as a dependency for your app:
 
 ```javascript
 angular.module('myApp', ['svdesignti.loggedUser']);
@@ -153,7 +88,7 @@ You can modify the configuration by extending the config object during the Angul
 app.config(['LoggedUserServiceProvider', function (LoggedUserServiceProvider) {
   var myConfig = {
     storage: 'localStorage',
-    storageKey: 'AppAcl'
+    storageKey: 'AppLoggedUser'
   };
   LoggedUserServiceProvider.config(myConfig);
 }]);
@@ -185,17 +120,14 @@ app.run(['LoggedUserService', function (LoggedUserService) {
     // Web storage record did not exist, we'll have to build it from scratch
     
     // Get the user role, and add it to LoggedUserService
-    var userRole = fetchUserRoleFromSomewhere();
-    LoggedUserService.addRole(userRole);
+    var user = fetchUserFromSomewhere();
+    LoggedUserService.setUser(user);
     
-    // Get ACL data, and add it to LoggedUserService
-    var aclData = fetchAclFromSomewhere();
-    LoggedUserService.setAbilities(aclData);
   }
 }]);
 ```
 
-You can also run `resume()` in the `config` phase, if you need the app to load the ACL data from web storage earlier in the app bootstrap process (e.g. before `$routeProvider` resolves the first route).
+You can also run `resume()` in the `config` phase, if you need the app to load the user data from web storage earlier in the app bootstrap process (e.g. before `$routeProvider` resolves the first route).
 
 ```js
 app.config(['LoggedUserServiceProvider', function (LoggedUserServiceProvider) {
@@ -207,148 +139,55 @@ app.config(['LoggedUserServiceProvider', function (LoggedUserServiceProvider) {
 
 Remove all data from web storage.
 
-#### `LoggedUserService.attachRole(role)`
+#### `LoggedUserService.setUser(user)`
 
-Attach a role to the current user. A user can have multiple roles.
-
-###### Parameters
-
-| Param | Type | Example | Details |
-| ----- | ---- | ------- | ------- |
-| `role` | string | `"admin"` | The role label |
-
-#### `LoggedUserService.detachRole(role)`
-
-Remove a role from the current user
-
-###### Parameters
-
-| Param | Type | Example | Details |
-| ----- | ---- | ------- | ------- |
-| `role` | string | `"admin"` | The role label |
-
-#### `LoggedUserService.flushRoles()`
-
-Remove all roles from current user
-
-#### `LoggedUserService.getRoles()`
-
-Get all of the roles attached to the user
-
-###### Returns
-
-**array**
-
-#### `LoggedUserService.hasRole(role)`
-
-Check if the current user has role(s) attached. If an array is given, all roles must be attached. To check if any roles in an array are attached see the `hasAnyRole()` method.
-
-###### Parameters
-
-| Param | Type | Example | Details |
-| ----- | ---- | ------- | ------- |
-| `role` | string/array | `"admin"` | The role label, or an array of role labels |
-
-###### Returns
-
-**boolean**
-
-#### `LoggedUserService.hasAnyRole(roles)`
-
-Check if the current user has any of the given roles attached. To check if all roles in an array are attached see the `hasRole()` method.
-
-###### Parameters
-
-| Param | Type | Example | Details |
-| ----- | ---- | ------- | ------- |
-| `roles` | array | `["admin","user"]` | Array of role labels |
-
-###### Returns
-
-**boolean**
-
-#### `LoggedUserService.setAbilities(abilities)`
-
-Set the abilities object (overwriting previous abilities).
+Set the user (overwriting previous user).
 
 ###### Parameters
 
 | Param | Type | Details |
 | ----- | ---- | ------- |
-| `abilities` | object | Each property on the abilities object should be a role. Each role should have a value of an array. The array should contain a list of all of the role's abilities. |
+| `user` | object | User. |
 
 ###### Example
 
 ```js
-var abilities = {
-  guest: ['login'],
-  user: ['logout', 'view_content'],
-  admin: ['logout', 'view_content', 'manage_content']
-}
-LoggedUserService.setAbilities(abilities);
+var user = {
+  username: 'Foo',
+  displayName: 'Bar'
+};
+LoggedUserService.setUser(user);
 ```
 
-#### `LoggedUserService.addAbility(role, ability)`
+#### `LoggedUserService.get()`
 
-Add an ability to a role
-
-###### Parameters
-
-| Param | Type | Example | Details |
-| ----- | ---- | ------- | ------- |
-| `role` | string | `"admin"` | The role label |
-| `ability` | string | `"create_users"` | The ability/permission label |
-
-#### `LoggedUserService.can(ability)`
-
-Does current user have permission to do the given ability?
+Return current user
 
 ###### Returns
 
-**boolean**
+**object**
 
 ###### Example
 
 ```js
-// Setup some abilities
-LoggedUserService.addAbility('moderator', 'ban_users');
-LoggedUserService.addAbility('admin', 'create_users');
 
-// Add moderator role to the current user
-LoggedUserService.attachRole('moderator');
+var user = {
+    username: 'Foo',
+    displayName: 'Bar'
+};
 
-// Check if the current user has these permissions
-LoggedUserService.can('ban_users'); // returns true
-LoggedUserService.can('create_users'); // returns false
+// Add current user
+LoggedUserService.setUser(user);
+
+//Return current user
+LoggedUserService.get(); // returns user object
 ```
-
-### Directives
-
-#### `aclShow`
-
-Show and element if truthy, otherwise hide it. 
-
-###### Example Usage
-
-Only user's that have the `edit_posts` permission would see the button.
-
-```html
-<button acl-show="edit_posts">Edit Post</button>
-```
-
-This is essentially a shortcut instead of having to type out an `ngShow` like this...
-
-```html
-<button ng-show="$ctrl.LoggedUserService.can('edit_posts')">Edit Post</button>
-```
-
----
 
 ## License
 
 The MIT License
 
-Angular ACL
+Angular Logged User
 Copyright (c) 2016 Mike McLin
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
