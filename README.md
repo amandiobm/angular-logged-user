@@ -1,7 +1,7 @@
 # Angular Logged User
 
-[![Build Status](https://travis-ci.org/amandiobm/angular-local-storage.svg?branch=master)](https://travis-ci.org/amandiobm/angular-local-storage)
-[![Coverage Status](https://img.shields.io/coveralls/amandiobm/angular-local-storage/master.svg?style=flat-square)](https://coveralls.io/r/amandiobm/angular-local-storage?branch=master)
+[![Build Status](https://travis-ci.org/amandiobm/angular-logged-user.svg?branch=master)](https://travis-ci.org/amandiobm/angular-logged-user)
+[![Coverage Status](https://coveralls.io/repos/github/amandiobm/angular-logged-user/badge.svg?branch=master)](https://coveralls.io/github/amandiobm/angular-logged-user?branch=master)
 
 ---
 
