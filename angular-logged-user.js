@@ -37,7 +37,6 @@ angular.module('svdesignti.loggedUser').provider('LoggedUserService', [
          * @returns {object}
          */
         var getUser = function () {
-            console.log('src/angular-logged-user.js:40', data);
             return data.user;
         };
 
@@ -138,7 +137,6 @@ angular.module('svdesignti.loggedUser').provider('LoggedUserService', [
          * @returns {Object}
          */
         LoggedUserService.getUser = function () {
-            console.log('src/angular-logged-user.js:152', data);
             return data.user;
         };
 
@@ -148,9 +146,7 @@ angular.module('svdesignti.loggedUser').provider('LoggedUserService', [
          * @param user
          */
         LoggedUserService.setUser = function (user) {
-            console.log('src/angular-logged-user.js:162', user);
             data.user = user;
-            console.log('src/angular-logged-user.js:164', data);
             save();
         };
 
@@ -160,7 +156,6 @@ angular.module('svdesignti.loggedUser').provider('LoggedUserService', [
          * @returns {Object}
          */
         LoggedUserService.get = function () {
-            console.log('src/angular-logged-user.js:174');
             return getUser();
         };
 
